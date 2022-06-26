@@ -1,0 +1,65 @@
+
+import os
+import cv2
+import random
+from PIL import Image
+# os.makedirs('labels_train')
+# os.makedirs('labels_val')
+
+img_train_path ='/Users/longzekun/Documents/7821ICT/division/archive/images_train/'  
+img_val_path = '/Users/longzekun/Documents/7821ICT/division/archive/images_val/'    
+labels_train_path = '/Users/longzekun/Documents/7821ICT/division/archive/annotations_train/'       
+labels_val_path = '/Users/longzekun/Documents/7821ICT/division/archive/Annotations_val/'           
+dir_images = '/Users/longzekun/Documents/7821ICT/division/archive/images/'                      
+dir_labels  = '/Users/longzekun/Documents/7821ICT/division/archive/annotations/'               
+
+images = os.listdir(dir_images)             #
+labels = os.listdir(dir_labels)            #
+
+random.seed(2021)                           #setting random
+random.shuffle(images)                     
+
+train_spilt_rate =0.8     #normally, 7:2:1
+a = int(len(images)*train_spilt_rate)  
+count = 0
+num_train=0
+num_val =0
+for i,image in enumerate(images):   
+
+    image_path = dir_images + image
+    img = Image.open(image_path)    #read images
+    if i < a:
+        image = image.split('.')
+        for label in labels:
+            label = label.split('.')
+            if label[0] ==image[0]:
+                image = str.join('.',image)
+                img.save(img_train_path + image)  # save image
+                label = str.join('.',label)
+                with open(dir_labels +label,'r') as f:
+                    with open(labels_train_path + label , 'w') as s:    #save label
+                        s.write(f.read())
+                num_train+=1
+            else:
+                continue
+
+    else:
+        image = image.split('.')
+        for label in labels:
+            label = label.split('.')
+            if label[0] == image[0]:
+                image = str.join('.', image)
+                img.save(img_val_path + image)  
+                label = str.join('.', label)
+                with open(dir_labels + label, 'r') as f:
+                    with open(labels_val_path + label, 'w') as s:  # 保存验证集
+                        s.write(f.read())
+                num_val+=1
+
+            else:
+                continue
+    count+=1
+
+print('sum image=====================',count)
+print('count training=====================',num_train)
+print('conunt testing=====================',num_val)
